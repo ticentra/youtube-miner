@@ -1,18 +1,16 @@
 {
-    "version": "0.5",
-    "name": "youtube-miner",
-    "author": "Palo Alto Networks",
-    "author_email": "techbizdev@paloaltonetworks.com",
-    "description": "Sample MineMeld node extension for mining Youtube API",
-    "url": "https://github.com/PaloAltoNetworks/youtube-miner",
+    "version": "1.2",
+    "name": "misp-custom-miner",
+    "author": "Ticentra",
+    "author_email": "ticentra@gmail.com",
+    "description": "Custom minemeld miner for extracting tagged attributes from MISP",
+    "url": "https://github.com/ticentra/misp-custom-miner",
     "entry_points": {
         "minemeld_nodes": {
-            "youtubeminer.Miner": "youtubeminer.node:Miner",
-            "youtubeminer.PlaylistMiner": "youtubeminer.node:PlaylistMiner",
-            "youtubeminer.ChannelMiner": "youtubeminer.node:ChannelMiner"
+            "mispcustomminer.MISPMiner": "mispcustomminer.node:MISPMiner"
         },
         "minemeld_prototypes": {
-            "youtubeminer.prototypes": "youtubeminer:prototypes"
+            "mispcustomminer.prototypes": "mispcustomminer:prototypes"
         }
     },
     "manifest_version": 0
