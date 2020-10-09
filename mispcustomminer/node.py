@@ -70,4 +70,8 @@ class MISPMiner(BasePollerFT):
         # called at every polling interval
         # search wanted attributes and return them as lists
         search_result = self.misp.search(controller='attributes', tags=[self.attr_tag])
-        return search_result['Attribute']
+        try:
+            return search_result['Attribute']
+        except:
+            LOG.debug('MISP response error:\n %s', search_result)
+            return []
