@@ -70,7 +70,7 @@ class MISPMiner(BasePollerFT):
     def _build_iterator(self, now):
         # called at every polling interval
         # search wanted attributes and return them as lists
-        search_result = self.misp.search(controller='attributes', tags=[self.attr_tag])
+        search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], published=True)
         try:
             result = search_result['response']['Attribute']
         except:
