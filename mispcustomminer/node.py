@@ -72,7 +72,7 @@ class MISPMiner(BasePollerFT):
         # search wanted attributes and return them as lists
         search_result = self.misp.search(controller='attributes', tags=[self.attr_tag])
         try:
-            result = search_result['Attribute']
+            result = search_result['response']['Attribute']
         except:
             with open('misp_search_response.json', 'w') as file:
                 json.dump(search_result, file)
