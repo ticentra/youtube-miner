@@ -17,9 +17,9 @@ prototypes:
       test prototype for mispcustomminer.MISPMiner
     config:
       verify_cert: False
-      misp_url: < give valid misp url here >
-      misp_key: < give valid misp key here >
-      attr_tag: < tag >
+      misp_url: '<give valid misp url here>'
+      misp_key: '<give valid misp key here>'
+      attr_tag: '<tag>'
       # age out of indicators
       age_out:
         sudden_death: true
