@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import logging
+import json
 from pymisp import PyMISP
 
 from minemeld.ft.basepoller import BasePollerFT
@@ -73,6 +74,7 @@ class MISPMiner(BasePollerFT):
         try:
             result = search_result['Attribute']
         except:
-            LOG.debug('MISP response error:\n %s', search_result)
+            with open('misp_search_response.json', 'w') as file:
+                json.dump(search_result, file)
             result = []
         return result
