@@ -53,8 +53,6 @@ class MISPMiner(BasePollerFT):
         if self.attr_tag is None:
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
-        with open('attr_types.json', 'w') as file:
-            json.dump(self.attr_types, file)
 
     def _process_item(item):
         # called on each item returned by _build_iterator
@@ -72,13 +70,16 @@ class MISPMiner(BasePollerFT):
         try:
             attr_type = _MISP_TO_MINEMELD[item['type']]
         except KeyError:  # should not happen
+            with open(indicator + ' type_KeyError.json', 'w') as file:
+                json.dump(self.attr_types, file)
             return []
         value = {
             'type': attr_type,
             'confidence': 100,
             'comment': comment
         }
-    
+        with open(indicator + ' attr.json', 'w') as file:
+            json.dump(self.attr_types, file)
         return [[indicator, value]]
 
     def _build_iterator(self, now):
@@ -88,9 +89,5 @@ class MISPMiner(BasePollerFT):
         try:
             result = search_result['response']['Attribute']
         except:
-            with open('misp_search_response.json', 'w') as file:
-                json.dump(search_result, file)
             result = []
-        with open('misp_search_result.json', 'w') as file:
-            json.dump(result, file)
         return result
