@@ -53,6 +53,8 @@ class MISPMiner(BasePollerFT):
         if self.attr_tag is None:
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
+        with open('attr_types.json', 'w') as file:
+                json.dump(self.attr_types, file)
 
     def _process_item(item):
         # called on each item returned by _build_iterator
