@@ -56,7 +56,7 @@ class MISPMiner(BasePollerFT):
     def _process_item(item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
-        
+        LOG.debug('processing item: %s ', item)
         comment = 'timestamp: ' + item['timestamp']
         if 'port' in item['type']:
             values = item['value'].split('|')
@@ -86,4 +86,5 @@ class MISPMiner(BasePollerFT):
             result = []
         with open('misp_result.json', 'w') as file:
             json.dump(result, file)
+        LOG.debug('misp search result: %s ', result)
         return result
