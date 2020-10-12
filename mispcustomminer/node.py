@@ -8,11 +8,12 @@ from minemeld.ft.basepoller import BasePollerFT
 
 LOG = logging.getLogger(__name__)
 
-
 _MISP_TO_MINEMELD = {
     'url': 'URL',
     'ip-dst': 'IPv4',
     'ip-src': 'IPv4',
+    'ip-dst|port': 'IPv4',
+    'ip-src|port': 'IPv4',
     'domain': 'domain',
     'hostname': 'domain',
     'md5': 'md5',
@@ -23,6 +24,8 @@ _MISP_TO_MINEMELD = {
     'mutex': 'mutex',
     'filename': 'file.name'
 }
+
+_ALL_MISP_TYPES = ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename']
 
 
 class MISPMiner(BasePollerFT):
@@ -45,32 +48,41 @@ class MISPMiner(BasePollerFT):
         self.misp = PyMISP(self.misp_url, self.misp_key, False)
 
         # get search values
-        self.attr_tag = self.config.get('attr_tag', self.verify_cert)
+        self.published = self.config.get('published', True)
+        self.attr_tag = self.config.get('attr_tag', None)
         if self.attr_tag is None:
             raise ValueError('%s - Attribute teg is required' % self.name)
+        self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
 
-    def _process_item(self, item):
+    def _process_item(item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
-
+    
         # each item is a dict in raw json format returned by misp, example:
-
-        indicator = item['value']
+    
+        comment = 'timestamp: ' + item['timestamp']
+        if 'port' in item['type']:
+            values = item['value'].split('|')
+            indicator = values[0]
+            comment += '\non port: ' + values[1]
+        else:
+            indicator = item['value']
         try:
             attr_type = _MISP_TO_MINEMELD[item['type']]
-        except KeyError:
-            attr_type = item['type']
+        except KeyError:  # should not happen
+            return []
         value = {
             'type': attr_type,
-            'confidence': 100
+            'confidence': 100,
+            'comment': comment
         }
-
+    
         return [[indicator, value]]
 
     def _build_iterator(self, now):
         # called at every polling interval
         # search wanted attributes and return them as lists
-        search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], published=True)
+        search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], type_attribute=self.attr_types, published=self.published)
         try:
             result = search_result['response']['Attribute']
         except:
