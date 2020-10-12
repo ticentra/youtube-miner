@@ -56,24 +56,22 @@ class MISPMiner(BasePollerFT):
     def _process_item(item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
-    
-        # each item is a dict in raw json format returned by misp, example:
-    
-
-        #comment = 'timestamp: ' + item['timestamp']
+        
+        comment = 'timestamp: ' + item['timestamp']
         if 'port' in item['type']:
             values = item['value'].split('|')
             indicator = values[0]
-            #comment += '\non port: ' + values[1]
+            comment += '\non port: ' + values[1]
         else:
             indicator = item['value']
         try:
             attr_type = _MISP_TO_MINEMELD[item['type']]
-        except KeyError:
+        except KeyError:  # should not happen
             return None
         value = {
             'type': attr_type,
-            'confidence': 100
+            'confidence': 100,
+            'comment': comment
         }
 
         return [[indicator, value]]
