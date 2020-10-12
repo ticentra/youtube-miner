@@ -53,7 +53,7 @@ class MISPMiner(BasePollerFT):
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
-    def _process_item(item):
+    def _process_item(self, item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
         LOG.debug('processing item: %s ', item)
