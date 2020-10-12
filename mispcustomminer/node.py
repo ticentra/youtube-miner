@@ -53,34 +53,39 @@ class MISPMiner(BasePollerFT):
         if self.attr_tag is None:
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
-
+        
     def _process_item(item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
     
         # each item is a dict in raw json format returned by misp, example:
     
-        comment = 'timestamp: ' + item['timestamp']
-        if 'port' in item['type']:
-            values = item['value'].split('|')
-            indicator = values[0]
-            comment += '\non port: ' + values[1]
-        else:
-            indicator = item['value']
         try:
-            attr_type = _MISP_TO_MINEMELD[item['type']]
-        except KeyError:  # should not happen
-            with open(indicator + ' type_KeyError.json', 'w') as file:
-                json.dump(self.attr_types, file)
+            comment = 'timestamp: ' + item['timestamp']
+            if 'port' in item['type']:
+                values = item['value'].split('|')
+                indicator = values[0]
+                comment += '\non port: ' + values[1]
+            else:
+                indicator = item['value']
+            try:
+                attr_type = _MISP_TO_MINEMELD[item['type']]
+            except KeyError:
+                attr_type = item['type']
+            value = {
+                'type': attr_type,
+                'confidence': 100,
+                'comment': comment
+            }
+    
+            return [[indicator, value]]
+        except Exception as e:
+            with open('item.json', 'w') as file:
+                json.dump(item, file)
+            ex = [str(e)]
+            with open('exception.json', 'w') as file:
+                json.dump(ex, file)
             return []
-        value = {
-            'type': attr_type,
-            'confidence': 100,
-            'comment': comment
-        }
-        with open(indicator + ' attr.json', 'w') as file:
-            json.dump(self.attr_types, file)
-        return [[indicator, value]]
 
     def _build_iterator(self, now):
         # called at every polling interval
