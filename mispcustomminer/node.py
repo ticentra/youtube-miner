@@ -86,4 +86,6 @@ class MISPMiner(BasePollerFT):
             result = search_result['response']['Attribute']
         except:
             result = []
+        with open('misp_result.json', 'w') as file:
+            json.dump(result, file)
         return result
