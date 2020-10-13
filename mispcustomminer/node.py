@@ -77,7 +77,7 @@ class MISPMiner(BasePollerFT):
 
     def _build_iterator(self, now):
         # called at every polling interval
-        # search wanted attributes and return them as lists
+        # search for attributes by tag and their type and return them as lists
         search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], type_attribute=self.attr_types, published=self.published)
         try:
             result = search_result['response']['Attribute']
