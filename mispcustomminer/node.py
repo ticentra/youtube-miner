@@ -22,10 +22,12 @@ _MISP_TO_MINEMELD = {
     'sha512': 'sha512',
     'ssdeep': 'ssdeep',
     'mutex': 'mutex',
-    'filename': 'file.name'
+    'filename': 'file.name',
+    'email-dst': 'email-addr',
+    'email-src': 'email-addr'
 }
 
-_ALL_MISP_TYPES = ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename']
+_ALL_MISP_TYPES = ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename', 'email-src', 'email-dst']
 
 class MISPMiner(BasePollerFT):
     # this method sets all variables required by miner
