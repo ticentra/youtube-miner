@@ -25,7 +25,7 @@ prototypes:
       # ignore attributes which value matches regex
       # ignore_regex: None
       # modify returned value of attribues matching regex
-      # indicators:
+      # indicator:
       #   regex: ^(http[s]*:\/\/)(.*)
       #   transform: \2
       # age out of indicators
