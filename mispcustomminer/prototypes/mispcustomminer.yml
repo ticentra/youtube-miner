@@ -23,11 +23,11 @@ prototypes:
       published: True
       attr_types: ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename', 'email-src', 'email-dst']
       # ignore attributes which value matches regex
-      # ignore_regex: None
+      ignore_regex: None
       # modify returned value of attribues matching regex
-      # indicator:
-      #   regex: ^(http[s]*:\/\/)(.*)
-      #   transform: \2
+      indicator:
+        regex: None
+        transform: None
       # age out of indicators
       age_out:
         sudden_death: true
