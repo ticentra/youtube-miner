@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import logging
 import json
 from pymisp import PyMISP
+import re
 
 from minemeld.ft.basepoller import BasePollerFT
 
@@ -55,9 +56,35 @@ class MISPMiner(BasePollerFT):
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
+        # regex for items to be ignored
+        self.ignore_regex = self.config.get('ignore_regex', None)
+        if self.ignore_regex is not None:
+            self.ignore_regex = re.compile(self.ignore_regex)
+            
+        # regex to transform certain indicators
+        self.indicator = self.config.get('indicator', None)
+
+        if self.indicator is not None:
+            if 'regex' in self.indicator:
+                self.indicator['regex'] = re.compile(self.indicator['regex'])
+            else:
+                raise ValueError('Indicator feild should have a regex.')
+            if 'transform' not in self.indicator:
+                if self.indicator['regex'].groups > 0:
+                    LOG.warning('No transform string for indicator'
+                                ' but pattern contains groups.')
+                self.indicator['transform'] = '\g<0>'
+
+        
     def _process_item(self, item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
+        
+        # ignoring items matching ignore_regex
+        if self.ignore_regex is not None:
+            self.ignore_regex.match(item['value']) is not None:
+                return [[None, None]]
+        
         comment = 'timestamp: ' + item['timestamp']
         if 'port' in item['type']:
             values = item['value'].split('|')
@@ -69,6 +96,14 @@ class MISPMiner(BasePollerFT):
             attr_type = _MISP_TO_MINEMELD[item['type']]
         except KeyError:  # should not happen
             return None
+        
+        # modify certain items as defiend in config
+        # overrides previously assigned indicator value
+        if self.indicator is not None:
+            _indicator = self.indicator['regex'].search(item['value'])
+            if _indicator is not None:
+                indicator = _indicator.expand(self.indicator['transform'])
+                
         value = {
             'type': attr_type,
             'confidence': 100,
