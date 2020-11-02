@@ -76,40 +76,45 @@ class MISPMiner(BasePollerFT):
 
         
     def _process_item(self, item):
-        # called on each item returned by _build_iterator
-        # it should return a list of (indicator, value) pairs
-        
-        # ignoring items matching ignore_regex
-        if self.ignore_regex is not None:
-            self.ignore_regex.match(item['value']) is not None:
-                return [[None, None]]
-        
-        comment = 'timestamp: ' + item['timestamp']
-        if 'port' in item['type']:
-            values = item['value'].split('|')
-            indicator = values[0]
-            comment += '\non port: ' + values[1]
-        else:
-            indicator = item['value']
         try:
-            attr_type = _MISP_TO_MINEMELD[item['type']]
-        except KeyError:  # should not happen
-            return None
-        
-        # modify certain items as defiend in config
-        # overrides previously assigned indicator value
-        if self.indicator is not None:
-            _indicator = self.indicator['regex'].search(item['value'])
-            if _indicator is not None:
-                indicator = _indicator.expand(self.indicator['transform'])
-                
-        value = {
-            'type': attr_type,
-            'confidence': 100,
-            'comment': comment
-        }
+            # called on each item returned by _build_iterator
+            # it should return a list of (indicator, value) pairs
 
-        return [[indicator, value]]
+            # ignoring items matching ignore_regex
+            if self.ignore_regex is not None:
+                self.ignore_regex.match(item['value']) is not None:
+                    return [[None, None]]
+
+            comment = 'timestamp: ' + item['timestamp']
+            if 'port' in item['type']:
+                values = item['value'].split('|')
+                indicator = values[0]
+                comment += '\non port: ' + values[1]
+            else:
+                indicator = item['value']
+            try:
+                attr_type = _MISP_TO_MINEMELD[item['type']]
+            except KeyError:  # should not happen
+                return None
+
+            # modify certain items as defiend in config
+            # overrides previously assigned indicator value
+            if self.indicator is not None:
+                _indicator = self.indicator['regex'].search(item['value'])
+                if _indicator is not None:
+                    indicator = _indicator.expand(self.indicator['transform'])
+
+            value = {
+                'type': attr_type,
+                'confidence': 100,
+                'comment': comment
+            }
+
+            return [[indicator, value]]
+       except Exception as e:
+            with open('Exception.json', 'w') as file:
+                json.dump(e, file)
+            return [[None, None]]
 
     def _build_iterator(self, now):
         # called at every polling interval
