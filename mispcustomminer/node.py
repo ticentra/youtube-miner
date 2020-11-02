@@ -57,15 +57,11 @@ class MISPMiner(BasePollerFT):
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
         # regex for idicators to be transformed 
-        self.indicator = self.config.get('indicator', None)
-
-        if self.indicator is not None:
-            if 'regex' in self.indicator:
-                self.indicator['regex'] = re.compile(self.indicator['regex'])
-            else:
-                raise ValueError('indicator should have a regex feild')
-            if 'transform' not in self.indicator:
-                raise ValueError('indicator should have a transformation feild')
+        self.indicator_regex = self.config.get('indicator_regex', None)
+        if self.indicator_regex is not None:
+            self.indicator_regex = re.compile(self.indicator_regex)
+            if self.indicator_transform is None:
+                raise ValueError('indicator_transform is required if indicator_regex given')
                 
     def _process_item(self, item):
         # called on each item returned by _build_iterator
@@ -86,12 +82,11 @@ class MISPMiner(BasePollerFT):
             'confidence': 100,
             'comment': comment
         }
-        if self.indicator is not None:
-            regex = self.indicator['regex']
-            transform = self.indicator['transform']
-            _indicator = regex.search(indicator)
+        if self.indicator_regex is not None:
+            _indicator = self.indicator_regex.search(indicator)
             if _indicator is not None:
-                indicator = _indicator.expand(transform)
+                indicator = _indicator.expand(self.indicator_transform)
+                
         return [[indicator, value]]
 
     def _build_iterator(self, now):
