@@ -22,6 +22,7 @@ prototypes:
       attr_tag: '<tag>'
       published: True
       attr_types: ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename', 'email-src', 'email-dst']
+      ignore_regex: null
       indicator_regex: null
       indicator_transform: null
       # age out of indicators
