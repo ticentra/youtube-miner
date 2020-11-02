@@ -60,8 +60,9 @@ class MISPMiner(BasePollerFT):
         self.indicator_regex = self.config.get('indicator_regex', None)
         if self.indicator_regex is not None:
             self.indicator_regex = re.compile(self.indicator_regex)
+            self.indicator_transform = self.config.get('indicator_transform', None)
             if self.indicator_transform is None:
-                raise ValueError('indicator_transform is required if indicator_regex given')
+                raise ValueError('%s - indicator_transform is required if indicator_regex given' % self.name)
                 
     def _process_item(self, item):
         # called on each item returned by _build_iterator
