@@ -56,6 +56,11 @@ class MISPMiner(BasePollerFT):
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
+        # regex for ignored attributes
+        self.ignore_regex = self.config.get('ignore_regex', None)
+        if self.ignore_regex is not None:
+            self.ignore_regex = re.compile(self.ignore_regex)
+        
         # regex for idicators to be transformed 
         self.indicator_regex = self.config.get('indicator_regex', None)
         if self.indicator_regex is not None:
@@ -83,6 +88,11 @@ class MISPMiner(BasePollerFT):
             'confidence': 100,
             'comment': comment
         }
+        if self.ignore_regex is not None:
+            _indicator = self.ignore_regex.search(indicator)
+            if _indicator is not None:
+                return [[None, None]]
+                
         if self.indicator_regex is not None:
             _indicator = self.indicator_regex.search(indicator)
             if _indicator is not None:
