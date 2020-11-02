@@ -86,12 +86,12 @@ class MISPMiner(BasePollerFT):
             'confidence': 100,
             'comment': comment
         }
-        
-        regex = self.indicator['regex']
-        transform = self.indicator['transform']
-        _indicator = regex.search(indicator)
-        if _indicator is not None:
-            indicator = _indicator.expand(transform)
+        if self.indicator is not None:
+            regex = self.indicator['regex']
+            transform = self.indicator['transform']
+            _indicator = regex.search(indicator)
+            if _indicator is not None:
+                indicator = _indicator.expand(transform)
         return [[indicator, value]]
 
     def _build_iterator(self, now):
