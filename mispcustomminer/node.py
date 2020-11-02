@@ -56,6 +56,17 @@ class MISPMiner(BasePollerFT):
             raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
+        # regex for idicators to be transformed 
+        self.indicator = self.config.get('indicator', None)
+
+        if self.indicator is not None:
+            if 'regex' in self.indicator:
+                self.indicator['regex'] = re.compile(self.indicator['regex'])
+            else:
+                raise ValueError('indicator should have a regex feild')
+            if 'transform' not in self.indicator:
+                raise ValueError('indicator should have a transformation feild')
+                
     def _process_item(self, item):
         # called on each item returned by _build_iterator
         # it should return a list of (indicator, value) pairs
@@ -76,8 +87,8 @@ class MISPMiner(BasePollerFT):
             'comment': comment
         }
         
-        regex = re.compile('^(http[s]*://)(.*)')
-        transform = r"\2"
+        regex = self.indicator['regex']
+        transform = self.indicator['transform']
         _indicator = regex.search(indicator)
         if _indicator is not None:
             indicator = _indicator.expand(transform)
