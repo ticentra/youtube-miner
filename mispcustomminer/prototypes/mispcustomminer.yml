@@ -22,12 +22,6 @@ prototypes:
       attr_tag: '<tag>'
       published: True
       attr_types: ['url', 'ip-dst', 'ip-src', 'ip-dst|port', 'ip-src|port', 'domain', 'hostname', 'md5', 'sha256', 'sha1', 'sha512', 'ssdeep', 'mutex', 'filename', 'email-src', 'email-dst']
-      # ignore attributes which value matches regex
-      ignore_regex: null
-      # modify returned value of attribues matching regex
-      indicator:
-        regex: null
-        transform: null
       # age out of indicators
       age_out:
         sudden_death: true
