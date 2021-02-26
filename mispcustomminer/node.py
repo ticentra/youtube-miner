@@ -97,7 +97,7 @@ class MISPMiner(BasePollerFT):
             _indicator = self.indicator_regex.search(indicator)
             if _indicator is not None:
                 indicator = _indicator.expand(self.indicator_transform)
-                
+        LOG.info('%s - is being processed', str(indicator))
         return [[indicator, value]]
 
     def _build_iterator(self, now):
