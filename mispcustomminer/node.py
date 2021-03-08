@@ -52,8 +52,6 @@ class MISPMiner(BasePollerFT):
         # get search values
         self.published = self.config.get('published', True)
         self.attr_tag = self.config.get('attr_tag', None)
-        if self.attr_tag is None:
-            raise ValueError('%s - Attribute teg is required' % self.name)
         self.attr_types = self.config.get('attr_types', _ALL_MISP_TYPES)
         
         # regex for ignored attributes
@@ -103,7 +101,13 @@ class MISPMiner(BasePollerFT):
     def _build_iterator(self, now):
         # called at every polling interval
         # search for attributes by tag and their type and return them as lists
-        search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], type_attribute=self.attr_types, published=self.published)
+        
+        search_result = []
+        if self.attr_tag is None:
+            search_result = self.misp.search(controller='attributes', type_attribute=self.attr_types, published=self.published)
+        else:
+            search_result = self.misp.search(controller='attributes', tags=[self.attr_tag], type_attribute=self.attr_types, published=self.published)
+        
         try:
             result = search_result['response']['Attribute']
         except:
