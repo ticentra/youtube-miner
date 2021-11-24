@@ -78,10 +78,14 @@ class MISPMiner(BasePollerFT):
             comment += '\non port: ' + values[1]
         else:
             indicator = item['value']
+        
+        LOG.info('%s - is being processed', str(indicator))
         try:
             attr_type = _MISP_TO_MINEMELD[item['type']]
-        except KeyError:  # should not happen
-            return None
+        except KeyError:  # should not happen (again) 
+            LOG.info('Unhandled MISP type - %s. Indicator not pulled.', str(item['type']))
+            return [[None, None]]
+        
         value = {
             'type': attr_type,
             'confidence': 100,
@@ -96,7 +100,6 @@ class MISPMiner(BasePollerFT):
             _indicator = self.indicator_regex.search(indicator)
             if _indicator is not None:
                 indicator = _indicator.expand(self.indicator_transform)
-        LOG.info('%s - is being processed', str(indicator))
         return [[indicator, value]]
 
     def _build_iterator(self, now):
